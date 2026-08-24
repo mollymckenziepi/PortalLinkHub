@@ -1,0 +1,292 @@
+:root {
+  --aqua: #338F80;
+  --red: #DE4526;
+  --navy: #305064;
+  --gold: #E1B148;
+  --beige: #EBEDDD;
+  --black: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 24px 48px;
+  font-family: Calibri, "Calibri Light", Candara, Segoe, "Segoe UI", sans-serif;
+  font-size: 16px;
+  color: var(--black);
+  background: #ffffff;
+}
+
+/* ---------- Header / Main Heading 1 ---------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 0 16px;
+}
+
+.logo {
+  height: 72px;
+  width: auto;
+}
+
+.site-title {
+  font-family: Cambria, Georgia, "Times New Roman", serif;
+  font-weight: bold;
+  color: var(--aqua);
+  font-size: 2.4rem;
+  margin: 0;
+}
+
+/* ---------- Heading 2 style ---------- */
+.section-heading {
+  font-family: Calibri, sans-serif;
+  font-weight: bold;
+  color: var(--red);
+  font-size: 1.3rem;
+  margin: 0 0 12px;
+}
+
+/* ---------- Heading 3 style ---------- */
+h3.category-title,
+summary.category-title {
+  font-family: Calibri, sans-serif;
+  font-weight: bold;
+  color: var(--black);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.tm-term {
+  color: var(--navy);
+  font-style: italic;
+}
+
+/* ---------- Body text ---------- */
+p {
+  font-family: Calibri, sans-serif;
+  color: var(--black);
+  margin: 0 0 8px;
+}
+
+.empty-note {
+  color: #666;
+  font-style: italic;
+}
+
+/* ---------- Search ---------- */
+.search-section {
+  margin-bottom: 32px;
+}
+
+.search-box {
+  position: relative;
+  max-width: 720px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #666;
+  pointer-events: none;
+}
+
+#search-input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  font-size: 1rem;
+  font-family: Calibri, sans-serif;
+  border: 2px solid var(--navy);
+  border-radius: 999px;
+  outline: none;
+}
+
+#search-input:focus {
+  border-color: var(--aqua);
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  max-height: 340px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.search-result-item {
+  display: block;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: var(--aqua);
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item:focus {
+  background: var(--beige);
+}
+
+.search-result-path {
+  display: block;
+  font-weight: normal;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.search-no-results {
+  padding: 12px 16px;
+  color: #666;
+  font-style: italic;
+}
+
+/* ---------- Popular Links pills ---------- */
+.popular-section {
+  margin-bottom: 32px;
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pill-link {
+  display: inline-block;
+  padding: 8px 20px;
+  border: 2px solid var(--aqua);
+  border-radius: 999px;
+  color: var(--aqua);
+  font-weight: bold;
+  font-family: Calibri, sans-serif;
+  text-decoration: none;
+  background: #ffffff;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pill-link:hover,
+.pill-link:focus {
+  background: var(--aqua);
+  color: #ffffff;
+}
+
+/* ---------- Category grid ---------- */
+.browse-section {
+  margin-bottom: 24px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.category-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 12px;
+  min-height: 100px;
+  background: var(--beige);
+  border: 1px solid #d7dac2;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: Calibri, sans-serif;
+  font-weight: bold;
+  color: var(--navy);
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.scribe-section {
+  margin-bottom: 24px;
+}
+
+.category-card:hover,
+.category-card:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- Link tree ---------- */
+.link-tree details {
+  margin-bottom: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: #fff;
+}
+
+.link-tree details details {
+  margin-top: 8px;
+  margin-left: 16px;
+  background: #fafafa;
+}
+
+.link-tree summary {
+  cursor: pointer;
+}
+
+.link-tree summary::-webkit-details-marker {
+  color: var(--aqua);
+}
+
+.link-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.link-list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 6px;
+}
+
+.link-list li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+  color: var(--black);
+}
+
+.link-list a {
+  color: var(--aqua);
+  font-weight: bold;
+  font-family: Calibri, sans-serif;
+  text-decoration: none;
+}
+
+.link-list a:hover,
+.link-list a:focus {
+  text-decoration: underline;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 0.85rem;
+}

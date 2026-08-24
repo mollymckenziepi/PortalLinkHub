@@ -1,0 +1,281 @@
+(function () {
+  const POPULAR_COUNT = 5;
+  const SEARCH_RESULT_LIMIT = 8;
+
+  const popularContainer = document.getElementById('popular-pills');
+  const resourceGridContainer = document.getElementById('resource-grid');
+  const treeContainer = document.getElementById('link-tree');
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+
+  const clicksApiUrl =
+    typeof CLICKS_API_URL === 'string' &&
+    CLICKS_API_URL.indexOf('PASTE_YOUR') !== 0
+      ? CLICKS_API_URL
+      : null;
+
+  let resourcesData = [];
+  let sectionsData = [];
+  let clickCounts = {};
+
+  init();
+
+  async function init() {
+    try {
+      const res = await fetch('./data/links.json');
+      const data = await res.json();
+      resourcesData = data.resources || [];
+      sectionsData = data.sections || [];
+    } catch {
+      resourcesData = [];
+      sectionsData = [];
+    }
+
+    if (clicksApiUrl) {
+      try {
+        const res = await fetch(clicksApiUrl);
+        clickCounts = await res.json();
+      } catch {
+        clickCounts = {};
+      }
+    }
+
+    renderPopular();
+    renderResourceCards();
+    renderTree();
+    setupSearch();
+  }
+
+  function flattenLinks(sections, trail) {
+    let out = [];
+    for (const node of sections) {
+      const path = trail.concat(node.title);
+      if (node.links) {
+        for (const link of node.links) {
+          out.push(
+            Object.assign({}, link, { path, clicks: clickCounts[link.id] || 0 })
+          );
+        }
+      }
+      if (node.children) {
+        out = out.concat(flattenLinks(node.children, path));
+      }
+    }
+    return out;
+  }
+
+  function flattenAll() {
+    const resources = resourcesData.map((link) =>
+      Object.assign({}, link, {
+        path: ['Resources & Guides'],
+        clicks: clickCounts[link.id] || 0,
+      })
+    );
+    return resources.concat(flattenLinks(sectionsData, ['Scribe Links']));
+  }
+
+  function recordClick(id) {
+    if (!clicksApiUrl) return;
+    // text/plain avoids a CORS preflight, which Apps Script web apps don't handle.
+    fetch(clicksApiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+  }
+
+  function makeLinkAnchor(link, className) {
+    const a = document.createElement('a');
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.className = className;
+    a.textContent = link.title;
+    a.addEventListener('click', () => recordClick(link.id));
+    return a;
+  }
+
+  function renderPopular() {
+    const allLinks = flattenAll();
+    const popular = allLinks
+      .slice()
+      .sort((a, b) => (b.clicks || 0) - (a.clicks || 0) || a.title.localeCompare(b.title))
+      .filter((link) => (link.clicks || 0) > 0)
+      .slice(0, POPULAR_COUNT);
+
+    popularContainer.innerHTML = '';
+
+    if (!popular.length) {
+      const note = document.createElement('p');
+      note.className = 'empty-note';
+      note.textContent = 'No link activity yet.';
+      popularContainer.appendChild(note);
+      return;
+    }
+
+    for (const link of popular) {
+      popularContainer.appendChild(makeLinkAnchor(link, 'pill-link'));
+    }
+  }
+
+  function renderResourceCards() {
+    resourceGridContainer.innerHTML = '';
+    for (const link of resourcesData) {
+      resourceGridContainer.appendChild(makeLinkAnchor(link, 'category-card'));
+    }
+  }
+
+  function renderTree() {
+    treeContainer.innerHTML = '';
+    for (const node of sectionsData) {
+      treeContainer.appendChild(renderNode(node));
+    }
+  }
+
+  // Brand rule: headings/titles keep the heading color, except a trademarked
+  // term inside them, which renders in navy italics.
+  const TM_TERM_PATTERN = /(Opportunity Culture®|OC®|OC™)/g;
+
+  function renderHeadingText(container, text) {
+    const parts = text.split(TM_TERM_PATTERN);
+    for (const part of parts) {
+      if (!part) continue;
+      if (TM_TERM_PATTERN.test(part)) {
+        TM_TERM_PATTERN.lastIndex = 0;
+        const span = document.createElement('span');
+        span.className = 'tm-term';
+        span.textContent = part;
+        container.appendChild(span);
+      } else {
+        container.appendChild(document.createTextNode(part));
+      }
+    }
+  }
+
+  function renderNode(node) {
+    const details = document.createElement('details');
+    details.id = `section-${node.id}`;
+
+    const summary = document.createElement('summary');
+    summary.className = 'category-title';
+    renderHeadingText(summary, node.title);
+    details.appendChild(summary);
+
+    const hasLinks = node.links && node.links.length;
+    const hasChildren = node.children && node.children.length;
+
+    if (hasLinks) {
+      const ul = document.createElement('ul');
+      ul.className = 'link-list';
+      for (const link of node.links) {
+        const li = document.createElement('li');
+        li.appendChild(makeLinkAnchor(link, ''));
+        ul.appendChild(li);
+      }
+      details.appendChild(ul);
+    }
+
+    if (hasChildren) {
+      for (const child of node.children) {
+        details.appendChild(renderNode(child));
+      }
+    }
+
+    if (!hasLinks && !hasChildren) {
+      const note = document.createElement('p');
+      note.className = 'empty-note';
+      note.textContent = 'No links yet.';
+      details.appendChild(note);
+    }
+
+    return details;
+  }
+
+  function scoreMatch(query, title) {
+    const q = query.toLowerCase().trim();
+    const t = title.toLowerCase();
+    if (!q) return -1;
+    if (t === q) return 100;
+    if (t.startsWith(q)) return 80;
+    if (t.includes(q)) return 60;
+
+    let ti = 0;
+    for (const ch of q) {
+      ti = t.indexOf(ch, ti);
+      if (ti === -1) return -1;
+      ti++;
+    }
+    return 30;
+  }
+
+  function setupSearch() {
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value;
+      if (!query.trim()) {
+        hideResults();
+        return;
+      }
+      const allLinks = flattenAll();
+      const scored = allLinks
+        .map((link) => ({ link, score: scoreMatch(query, link.title) }))
+        .filter((entry) => entry.score > 0)
+        .sort((a, b) => b.score - a.score || a.link.title.localeCompare(b.link.title))
+        .slice(0, SEARCH_RESULT_LIMIT);
+
+      showResults(scored.map((entry) => entry.link));
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-box')) {
+        hideResults();
+      }
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        hideResults();
+      }
+    });
+  }
+
+  function showResults(links) {
+    searchResults.innerHTML = '';
+
+    if (!links.length) {
+      const empty = document.createElement('div');
+      empty.className = 'search-no-results';
+      empty.textContent = 'No matching links found.';
+      searchResults.appendChild(empty);
+      searchResults.hidden = false;
+      return;
+    }
+
+    for (const link of links) {
+      const a = document.createElement('a');
+      a.href = link.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.className = 'search-result-item';
+      a.addEventListener('click', () => recordClick(link.id));
+
+      const title = document.createElement('span');
+      title.textContent = link.title;
+      a.appendChild(title);
+
+      const pathEl = document.createElement('span');
+      pathEl.className = 'search-result-path';
+      pathEl.textContent = link.path.join(' / ');
+      a.appendChild(pathEl);
+
+      searchResults.appendChild(a);
+    }
+
+    searchResults.hidden = false;
+  }
+
+  function hideResults() {
+    searchResults.hidden = true;
+    searchResults.innerHTML = '';
+  }
+})();

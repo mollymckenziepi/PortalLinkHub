@@ -8,7 +8,7 @@ Sheet.
 ## Structure
 
 ```
-public/                 the site itself (host this folder)
+docs/                 the site itself (host this folder)
   index.html
   styles.css
   app.js
@@ -21,7 +21,7 @@ google-apps-script/
 
 ## Editing links
 
-Open [public/data/links.json](public/data/links.json). It has two top-level
+Open [docs/data/links.json](docs/data/links.json). It has two top-level
 parts:
 
 - **`resources`** — a flat list of links rendered as the card grid under
@@ -58,7 +58,7 @@ just stay empty. Do this once, from your own Google account:
    to your org).
 7. Click **Deploy**, authorize the permissions it asks for, then copy the
    **Web app URL** it gives you (ends in `/exec`).
-8. Paste that URL into [public/config.js](public/config.js) as the value of
+8. Paste that URL into [docs/config.js](docs/config.js) as the value of
    `CLICKS_API_URL`.
 
 The script auto-creates a "Clicks" sheet tab the first time a link is
@@ -71,7 +71,7 @@ not work reliably — the browser blocks the fetch of `data/links.json` from
 `file://`. Serve it over `http://` even for local testing.
 
 **Easiest: VS Code Live Server extension.** Install "Live Server" (by Ritwick
-Dey) from the Extensions panel, then right-click `public/index.html` >
+Dey) from the Extensions panel, then right-click `docs/index.html` >
 **Open with Live Server**.
 
 **No extensions needed:** run the included PowerShell script, then open
@@ -81,14 +81,24 @@ the printed URL in a browser:
 powershell -ExecutionPolicy Bypass -File serve.ps1
 ```
 
-It serves the `public` folder at `http://localhost:8099/`. Stop it with
+It serves the `docs` folder at `http://localhost:8099/`. Stop it with
 Ctrl+C in that terminal window.
 
-If you have Node or Python installed, `npx serve public` or
-`python -m http.server 8080 --directory public` work too.
+If you have Node or Python installed, `npx serve docs` or
+`python -m http.server 8080 --directory docs` work too.
 
 ## Deploying
 
-Host the contents of `public/` on whatever internal static web host you
+Host the contents of `docs/` on whatever internal static web host you
 normally use (a simple web server, an internal IIS/Apache site, etc.) — there
 is nothing to build or install.
+
+### GitHub Pages
+
+The site lives in `docs/` (not the repo root, and not `public/`) specifically
+so it lines up with GitHub Pages' built-in folder options. In the repo:
+**Settings > Pages > Build and deployment > Source: Deploy from a branch**,
+then set **Branch: `main`** and the folder dropdown to **`/docs`** (not
+`/ (root)`), and Save. GitHub Pages only supports `/ (root)` or `/docs` as
+folder choices in that simple mode — it can't point at an arbitrary folder
+name, which is why the site folder is named `docs` here instead of `public`.

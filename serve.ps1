@@ -1,5 +1,5 @@
 param(
-    [string]$RootDir = (Join-Path $PSScriptRoot "public"),
+    [string]$RootDir = (Join-Path $PSScriptRoot "docs"),
     [int]$Port = 8099
 )
 

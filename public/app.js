@@ -84,6 +84,14 @@
     }).catch(() => {});
   }
 
+  function attachClickTracking(anchor, id) {
+    anchor.addEventListener('click', () => recordClick(id));
+    // Middle-click ("open in new tab") fires auxclick instead of click.
+    anchor.addEventListener('auxclick', (e) => {
+      if (e.button === 1) recordClick(id);
+    });
+  }
+
   function makeLinkAnchor(link, className) {
     const a = document.createElement('a');
     a.href = link.url;
@@ -91,7 +99,7 @@
     a.rel = 'noopener noreferrer';
     a.className = className;
     a.textContent = link.title;
-    a.addEventListener('click', () => recordClick(link.id));
+    attachClickTracking(a, link.id);
     return a;
   }
 
@@ -134,7 +142,7 @@
 
   // Brand rule: headings/titles keep the heading color, except a trademarked
   // term inside them, which renders in navy italics.
-  const TM_TERM_PATTERN = /(Opportunity Culture®|OC®|OC™)/g;
+  const TM_TERM_PATTERN = /(Opportunity Culture®)/g;
 
   function renderHeadingText(container, text) {
     const parts = text.split(TM_TERM_PATTERN);
@@ -152,13 +160,34 @@
     }
   }
 
+  function makeChevron() {
+    const svgNs = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNs, 'svg');
+    svg.setAttribute('class', 'tree-chevron');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    const path = document.createElementNS(svgNs, 'path');
+    path.setAttribute('d', 'M9 6l6 6-6 6');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '2.5');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
+    return svg;
+  }
+
   function renderNode(node) {
     const details = document.createElement('details');
     details.id = `section-${node.id}`;
 
     const summary = document.createElement('summary');
     summary.className = 'category-title';
-    renderHeadingText(summary, node.title);
+    const summaryLabel = document.createElement('span');
+    summaryLabel.className = 'summary-label';
+    renderHeadingText(summaryLabel, node.title);
+    summary.appendChild(summaryLabel);
+    summary.appendChild(makeChevron());
     details.appendChild(summary);
 
     const hasLinks = node.links && node.links.length;
@@ -257,7 +286,7 @@
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
       a.className = 'search-result-item';
-      a.addEventListener('click', () => recordClick(link.id));
+      attachClickTracking(a, link.id);
 
       const title = document.createElement('span');
       title.textContent = link.title;

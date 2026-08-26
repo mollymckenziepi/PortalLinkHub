@@ -5,6 +5,7 @@
   --gold: #E1B148;
   --beige: #EBEDDD;
   --black: #000000;
+  --aqua-tint: #EAF3F1;
 }
 
 * {
@@ -12,8 +13,9 @@
 }
 
 body {
-  margin: 0;
-  padding: 0 24px 48px;
+  margin: 0 auto;
+  max-width: 1800px;
+  padding: 0 clamp(16px, 4vw, 24px) 56px;
   font-family: Calibri, "Calibri Light", Candara, Segoe, "Segoe UI", sans-serif;
   font-size: 16px;
   color: var(--black);
@@ -22,32 +24,86 @@ body {
 
 /* ---------- Header / Main Heading 1 ---------- */
 .site-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 20px;
-  padding: 28px 0 16px;
+  padding: 32px 0 24px;
+  margin-bottom: 36px;
+  border-bottom: 3px solid var(--beige);
 }
 
 .logo {
-  height: 72px;
+  height: clamp(52px, 8vw, 80px);
   width: auto;
+  grid-column: 1;
+  justify-self: start;
 }
 
 .site-title {
+  grid-column: 2;
+  justify-self: center;
+  text-align: center;
   font-family: Cambria, Georgia, "Times New Roman", serif;
   font-weight: bold;
   color: var(--aqua);
-  font-size: 2.4rem;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  letter-spacing: -0.01em;
   margin: 0;
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .logo,
+  .site-title {
+    grid-column: 1;
+    justify-self: center;
+  }
 }
 
 /* ---------- Heading 2 style ---------- */
 .section-heading {
+  position: relative;
   font-family: Calibri, sans-serif;
   font-weight: bold;
   color: var(--red);
-  font-size: 1.3rem;
-  margin: 0 0 12px;
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  margin: 0 0 18px;
+  padding-left: 16px;
+}
+
+.section-heading::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 5px;
+  border-radius: 3px;
+  background: var(--aqua);
+}
+
+.center-heading {
+  text-align: center;
+  padding-left: 0;
+}
+
+.center-heading::before {
+  display: none;
+}
+
+.center-heading::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin: 10px auto 0;
+  border-radius: 2px;
+  background: var(--aqua);
 }
 
 /* ---------- Heading 3 style ---------- */
@@ -56,7 +112,7 @@ summary.category-title {
   font-family: Calibri, sans-serif;
   font-weight: bold;
   color: var(--black);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin: 0;
 }
 
@@ -73,54 +129,59 @@ p {
 }
 
 .empty-note {
-  color: #666;
+  color: #777;
   font-style: italic;
 }
 
 /* ---------- Search ---------- */
 .search-section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  text-align: center;
 }
 
 .search-box {
+  margin: 0 auto;
   position: relative;
   max-width: 720px;
 }
 
 .search-icon {
   position: absolute;
-  left: 16px;
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  color: #666;
+  color: #888;
   pointer-events: none;
 }
 
 #search-input {
   width: 100%;
-  padding: 14px 16px 14px 44px;
-  font-size: 1rem;
+  padding: 16px 20px 16px 50px;
+  font-size: 1.05rem;
   font-family: Calibri, sans-serif;
   border: 2px solid var(--navy);
   border-radius: 999px;
   outline: none;
+  box-shadow: 0 2px 8px rgba(48, 80, 100, 0.1);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 #search-input:focus {
   border-color: var(--aqua);
+  box-shadow: 0 0 0 4px var(--aqua-tint), 0 2px 8px rgba(48, 80, 100, 0.1);
 }
 
 .search-results {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 0;
   right: 0;
   background: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
   max-height: 340px;
   overflow-y: auto;
   z-index: 10;
@@ -128,11 +189,12 @@ p {
 
 .search-result-item {
   display: block;
-  padding: 10px 16px;
+  padding: 12px 18px;
   text-decoration: none;
   color: var(--aqua);
   font-weight: bold;
   border-bottom: 1px solid #eee;
+  transition: background 0.1s ease;
 }
 
 .search-result-item:last-child {
@@ -141,25 +203,26 @@ p {
 
 .search-result-item:hover,
 .search-result-item:focus {
-  background: var(--beige);
+  background: var(--aqua-tint);
 }
 
 .search-result-path {
   display: block;
   font-weight: normal;
   font-size: 0.8rem;
-  color: #666;
+  color: #777;
+  margin-top: 2px;
 }
 
 .search-no-results {
-  padding: 12px 16px;
-  color: #666;
+  padding: 14px 18px;
+  color: #777;
   font-style: italic;
 }
 
 /* ---------- Popular Links pills ---------- */
 .popular-section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .pill-row {
@@ -170,33 +233,55 @@ p {
 
 .pill-link {
   display: inline-block;
-  padding: 8px 20px;
+  padding: 10px 22px;
   border: 2px solid var(--aqua);
   border-radius: 999px;
   color: var(--aqua);
   font-weight: bold;
+  font-size: 1rem;
   font-family: Calibri, sans-serif;
   text-decoration: none;
   background: #ffffff;
-  transition: background 0.15s ease, color 0.15s ease;
+  box-shadow: 0 2px 6px rgba(51, 143, 128, 0.15);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .pill-link:hover,
 .pill-link:focus {
   background: var(--aqua);
   color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(51, 143, 128, 0.3);
 }
 
 /* ---------- Category grid ---------- */
 .browse-section {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 18px;
   margin-bottom: 24px;
+}
+
+@media (min-width: 480px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 760px) {
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .category-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .category-card {
@@ -204,63 +289,101 @@ p {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 24px 12px;
-  min-height: 100px;
+  padding: 26px 14px;
+  min-height: 108px;
   background: var(--beige);
   border: 1px solid #d7dac2;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   font-family: Calibri, sans-serif;
   font-weight: bold;
   color: var(--navy);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   text-decoration: none;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 2px 6px rgba(48, 80, 100, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.category-card:hover,
+.category-card:focus {
+  transform: translateY(-3px);
+  border-color: var(--aqua);
+  box-shadow: 0 10px 22px rgba(48, 80, 100, 0.18);
 }
 
 .scribe-section {
   margin-bottom: 24px;
 }
 
-.category-card:hover,
-.category-card:focus {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-}
-
 /* ---------- Link tree ---------- */
 .link-tree details {
-  margin-bottom: 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 10px 16px;
+  margin-bottom: 10px;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  padding: 14px 18px;
   background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s ease;
+}
+
+.link-tree > details:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .link-tree details details {
-  margin-top: 8px;
-  margin-left: 16px;
-  background: #fafafa;
+  margin-top: 10px;
+  margin-left: 4px;
+  padding: 12px 16px;
+  background: var(--aqua-tint);
+  border: none;
+  border-left: 3px solid var(--aqua);
+  border-radius: 8px;
+  box-shadow: none;
 }
 
 .link-tree summary {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  list-style: none;
 }
 
 .link-tree summary::-webkit-details-marker {
+  display: none;
+}
+
+.link-tree summary::marker {
+  content: "";
+}
+
+.summary-label {
+  flex: 1 1 auto;
+}
+
+.tree-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
   color: var(--aqua);
+  transition: transform 0.2s ease;
+}
+
+.link-tree details[open] > summary > .tree-chevron {
+  transform: rotate(90deg);
 }
 
 .link-list {
   list-style: none;
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   padding: 0;
 }
 
 .link-list li {
   position: relative;
-  padding-left: 16px;
-  margin-bottom: 6px;
+  padding-left: 18px;
+  margin-bottom: 8px;
 }
 
 .link-list li::before {
@@ -280,13 +403,4 @@ p {
 .link-list a:hover,
 .link-list a:focus {
   text-decoration: underline;
-}
-
-/* ---------- Footer ---------- */
-.site-footer {
-  margin-top: 40px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
-  color: #666;
-  font-size: 0.85rem;
 }

@@ -1,0 +1,15 @@
+{
+  "resources": [
+    { "id": "res-placeholder-1", "title": "Placeholder 1", "url": "https://example.com/placeholder-1" },
+    { "id": "res-placeholder-2", "title": "Placeholder 2", "url": "https://example.com/placeholder-2" }
+  ],
+  "sections": [
+    {
+      "id": "example-section",
+      "title": "Example Section",
+      "links": [
+        { "id": "example-link", "title": "Example Link", "url": "https://example.com/example" }
+      ]
+    }
+  ]
+}

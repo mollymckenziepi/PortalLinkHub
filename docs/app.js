@@ -21,15 +21,31 @@
   init();
 
   async function init() {
-    try {
-      const res = await fetch('./data/links.json');
-      const data = await res.json();
-      resourcesData = data.resources || [];
-      sectionsData = data.sections || [];
-    } catch {
-      resourcesData = [];
-      sectionsData = [];
+    let data = null;
+
+    // Real link data is served from the Apps Script backend so it never has
+    // to live in this (public) repo. ./data/links.json is only a placeholder
+    // fallback for local development when CLICKS_API_URL isn't configured.
+    if (clicksApiUrl) {
+      try {
+        const res = await fetch(`${clicksApiUrl}?type=links`);
+        data = await res.json();
+      } catch {
+        data = null;
+      }
     }
+
+    if (!data || (!data.resources && !data.sections)) {
+      try {
+        const res = await fetch('./data/links.json');
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+    }
+
+    resourcesData = (data && data.resources) || [];
+    sectionsData = (data && data.sections) || [];
 
     if (clicksApiUrl) {
       try {

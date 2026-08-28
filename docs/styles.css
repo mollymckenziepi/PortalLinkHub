@@ -118,7 +118,7 @@ summary.category-title {
 
 .tm-term {
   color: var(--navy);
-  font-style: italic;
+  font-style: normal;
 }
 
 /* ---------- Body text ---------- */

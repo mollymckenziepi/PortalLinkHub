@@ -1,14 +1,38 @@
 {
-  "resources": [
-    { "id": "res-placeholder-1", "title": "Placeholder 1", "url": "https://example.com/placeholder-1" },
-    { "id": "res-placeholder-2", "title": "Placeholder 2", "url": "https://example.com/placeholder-2" }
-  ],
   "sections": [
     {
-      "id": "example-section",
-      "title": "Example Section",
+      "id": "bucket-portal-setup",
+      "title": "Portal Set Up",
       "links": [
-        { "id": "example-link", "title": "Example Link", "url": "https://example.com/example" }
+        { "id": "placeholder-setup-1", "title": "Example Set Up Link", "url": "https://example.com/setup" }
+      ]
+    },
+    {
+      "id": "bucket-portal-development",
+      "title": "Portal Development",
+      "links": [
+        { "id": "placeholder-dev-1", "title": "Example Development Link", "url": "https://example.com/development" }
+      ]
+    },
+    {
+      "id": "bucket-portal-communications",
+      "title": "Portal Communications",
+      "links": [
+        { "id": "placeholder-comms-1", "title": "Example Communications Link", "url": "https://example.com/communications" }
+      ]
+    },
+    {
+      "id": "bucket-portal-howto",
+      "title": "Portal How-To",
+      "links": [
+        { "id": "placeholder-howto-1", "title": "Example How-To Guide", "url": "https://example.com/how-to" }
+      ]
+    },
+    {
+      "id": "bucket-portal-support",
+      "title": "Portal Support",
+      "links": [
+        { "id": "placeholder-support-1", "title": "Example Support Link", "url": "https://example.com/support" }
       ]
     }
   ]

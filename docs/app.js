@@ -3,7 +3,7 @@
   const SEARCH_RESULT_LIMIT = 8;
 
   const popularContainer = document.getElementById('popular-pills');
-  const resourceGridContainer = document.getElementById('resource-grid');
+  const bucketGridContainer = document.getElementById('bucket-grid');
   const treeContainer = document.getElementById('link-tree');
   const searchInput = document.getElementById('search-input');
   const searchResults = document.getElementById('search-results');
@@ -14,7 +14,6 @@
       ? CLICKS_API_URL
       : null;
 
-  let resourcesData = [];
   let sectionsData = [];
   let clickCounts = {};
 
@@ -35,7 +34,7 @@
       }
     }
 
-    if (!data || (!data.resources && !data.sections)) {
+    if (!data || !data.sections) {
       try {
         const res = await fetch('./data/links.json');
         data = await res.json();
@@ -44,7 +43,6 @@
       }
     }
 
-    resourcesData = (data && data.resources) || [];
     sectionsData = (data && data.sections) || [];
 
     if (clicksApiUrl) {
@@ -57,7 +55,7 @@
     }
 
     renderPopular();
-    renderResourceCards();
+    renderBucketCards();
     renderTree();
     setupSearch();
   }
@@ -81,13 +79,7 @@
   }
 
   function flattenAll() {
-    const resources = resourcesData.map((link) =>
-      Object.assign({}, link, {
-        path: ['Resources & Guides'],
-        clicks: clickCounts[link.id] || 0,
-      })
-    );
-    return resources.concat(flattenLinks(sectionsData, ['Scribe Links']));
+    return flattenLinks(sectionsData, []);
   }
 
   function recordClick(id) {
@@ -142,10 +134,31 @@
     }
   }
 
-  function renderResourceCards() {
-    resourceGridContainer.innerHTML = '';
-    for (const link of resourcesData) {
-      resourceGridContainer.appendChild(makeLinkAnchor(link, 'category-card'));
+  function renderBucketCards() {
+    bucketGridContainer.innerHTML = '';
+    for (const node of sectionsData) {
+      const card = document.createElement('div');
+      card.className = 'bucket-card';
+      card.textContent = node.title;
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+
+      const jump = () => {
+        const target = document.getElementById(`section-${node.id}`);
+        if (target) {
+          target.open = true;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+      card.addEventListener('click', jump);
+      card.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          jump();
+        }
+      });
+
+      bucketGridContainer.appendChild(card);
     }
   }
 

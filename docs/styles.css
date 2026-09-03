@@ -310,6 +310,16 @@ p {
 }
 
 /* ---------- Link tree ---------- */
+.tree-group {
+  margin-top: 10px;
+  margin-left: 4px;
+}
+
+.tree-group-label {
+  margin-bottom: 8px;
+  color: var(--navy);
+}
+
 .link-tree details {
   margin-bottom: 10px;
   border: 1px solid #e2e2e2;

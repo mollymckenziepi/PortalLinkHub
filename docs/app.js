@@ -207,6 +207,25 @@
   }
 
   function renderNode(node) {
+    return node.plain ? renderPlainNode(node) : renderCollapsibleNode(node);
+  }
+
+  function renderPlainNode(node) {
+    const container = document.createElement('div');
+    container.id = `section-${node.id}`;
+    container.className = 'tree-group';
+
+    const heading = document.createElement('p');
+    heading.className = 'category-title tree-group-label';
+    renderHeadingText(heading, node.title);
+    container.appendChild(heading);
+
+    appendNodeBody(container, node);
+
+    return container;
+  }
+
+  function renderCollapsibleNode(node) {
     const details = document.createElement('details');
     details.id = `section-${node.id}`;
 
@@ -219,6 +238,12 @@
     summary.appendChild(makeChevron());
     details.appendChild(summary);
 
+    appendNodeBody(details, node);
+
+    return details;
+  }
+
+  function appendNodeBody(container, node) {
     const hasLinks = node.links && node.links.length;
     const hasChildren = node.children && node.children.length;
 
@@ -230,12 +255,12 @@
         li.appendChild(makeLinkAnchor(link, ''));
         ul.appendChild(li);
       }
-      details.appendChild(ul);
+      container.appendChild(ul);
     }
 
     if (hasChildren) {
       for (const child of node.children) {
-        details.appendChild(renderNode(child));
+        container.appendChild(renderNode(child));
       }
     }
 
@@ -243,10 +268,8 @@
       const note = document.createElement('p');
       note.className = 'empty-note';
       note.textContent = 'No links yet.';
-      details.appendChild(note);
+      container.appendChild(note);
     }
-
-    return details;
   }
 
   function scoreMatch(query, title) {

@@ -108,7 +108,8 @@ body {
 
 /* ---------- Heading 3 style ---------- */
 h3.category-title,
-summary.category-title {
+summary.category-title,
+p.category-title {
   font-family: Calibri, sans-serif;
   font-weight: bold;
   color: var(--black);
@@ -312,12 +313,11 @@ p {
 /* ---------- Link tree ---------- */
 .tree-group {
   margin-top: 10px;
-  margin-left: 4px;
+  margin-left: 20px;
 }
 
 .tree-group-label {
   margin-bottom: 8px;
-  color: var(--navy);
 }
 
 .link-tree details {

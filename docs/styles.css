@@ -108,8 +108,7 @@ body {
 
 /* ---------- Heading 3 style ---------- */
 h3.category-title,
-summary.category-title,
-p.category-title {
+summary.category-title {
   font-family: Calibri, sans-serif;
   font-weight: bold;
   color: var(--black);
@@ -316,8 +315,35 @@ p {
   margin-left: 20px;
 }
 
-.tree-group-label {
-  margin-bottom: 8px;
+.menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--aqua);
+  font-weight: bold;
+  font-family: Calibri, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu-trigger:hover,
+.menu-trigger:focus {
+  text-decoration: underline;
+}
+
+.menu-trigger .tree-chevron {
+  width: 11px;
+  height: 11px;
+}
+
+.menu-trigger[aria-expanded="true"] .tree-chevron {
+  transform: rotate(90deg);
 }
 
 .link-tree details {
@@ -395,6 +421,10 @@ p {
   position: absolute;
   left: 0;
   color: var(--black);
+}
+
+.tree-group .link-list li::before {
+  content: "\2013";
 }
 
 .link-list a {

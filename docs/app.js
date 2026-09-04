@@ -207,25 +207,6 @@
   }
 
   function renderNode(node) {
-    return node.plain ? renderPlainNode(node) : renderCollapsibleNode(node);
-  }
-
-  function renderPlainNode(node) {
-    const container = document.createElement('div');
-    container.id = `section-${node.id}`;
-    container.className = 'tree-group';
-
-    const heading = document.createElement('p');
-    heading.className = 'category-title tree-group-label';
-    renderHeadingText(heading, node.title);
-    container.appendChild(heading);
-
-    appendNodeBody(container, node);
-
-    return container;
-  }
-
-  function renderCollapsibleNode(node) {
     const details = document.createElement('details');
     details.id = `section-${node.id}`;
 
@@ -243,28 +224,70 @@
     return details;
   }
 
-  function appendNodeBody(container, node) {
-    const hasLinks = node.links && node.links.length;
-    const hasChildren = node.children && node.children.length;
+  // A menu-trigger child renders as a bulleted item alongside its parent's
+  // links (same look, same list) instead of its own dropdown box; clicking
+  // it reveals its children in a panel beneath the list.
+  function makeMenuTriggerItem(node) {
+    const li = document.createElement('li');
 
-    if (hasLinks) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'menu-trigger';
+    button.setAttribute('aria-expanded', 'false');
+    const label = document.createElement('span');
+    label.className = 'summary-label';
+    renderHeadingText(label, node.title);
+    button.appendChild(label);
+    button.appendChild(makeChevron());
+    li.appendChild(button);
+
+    const panel = document.createElement('div');
+    panel.id = `section-${node.id}`;
+    panel.className = 'tree-group';
+    panel.hidden = true;
+    appendNodeBody(panel, node);
+    li.appendChild(panel);
+
+    button.addEventListener('click', () => {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      panel.hidden = expanded;
+    });
+
+    return li;
+  }
+
+  function appendNodeBody(container, node) {
+    const allChildren = node.children || [];
+    const menuTriggers = allChildren.filter((child) => child.menuTrigger);
+    const otherChildren = allChildren.filter((child) => !child.menuTrigger);
+
+    const hasLinks = node.links && node.links.length;
+    const hasChildren = otherChildren.length > 0;
+
+    if (hasLinks || menuTriggers.length) {
       const ul = document.createElement('ul');
       ul.className = 'link-list';
-      for (const link of node.links) {
-        const li = document.createElement('li');
-        li.appendChild(makeLinkAnchor(link, ''));
-        ul.appendChild(li);
+      if (hasLinks) {
+        for (const link of node.links) {
+          const li = document.createElement('li');
+          li.appendChild(makeLinkAnchor(link, ''));
+          ul.appendChild(li);
+        }
+      }
+      for (const trigger of menuTriggers) {
+        ul.appendChild(makeMenuTriggerItem(trigger));
       }
       container.appendChild(ul);
     }
 
     if (hasChildren) {
-      for (const child of node.children) {
+      for (const child of otherChildren) {
         container.appendChild(renderNode(child));
       }
     }
 
-    if (!hasLinks && !hasChildren) {
+    if (!hasLinks && !hasChildren && !menuTriggers.length) {
       const note = document.createElement('p');
       note.className = 'empty-note';
       note.textContent = 'No links yet.';
